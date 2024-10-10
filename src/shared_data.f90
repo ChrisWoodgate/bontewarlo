@@ -130,7 +130,7 @@ module shared_data
     logical :: burn_in
     ! Number of burn-in sweeps (each sweep is n_atoms mc steps)
     integer :: burn_in_sweeps
-    ! Number of tmmc sweeps (each sweep is n_atoms mc steps)
+    ! Number of sweeps (each sweep is n_atoms mc steps)
     integer :: mc_sweeps
     ! Number of bins across energy range
     integer :: bins
@@ -155,7 +155,7 @@ module shared_data
     logical :: burn_in
     ! Number of burn-in sweeps (each sweep is n_atoms mc steps)
     integer :: burn_in_sweeps
-    ! Number of tmmc sweeps (each sweep is n_atoms mc steps)
+    ! Number of  sweeps (each sweep is n_atoms mc steps)
     integer :: mc_sweeps
     ! Number of bins across energy range
     integer :: bins
@@ -175,6 +175,19 @@ module shared_data
     real :: energy_max
 
   end type wl_params
+
+  !--------------------------------------------------------------------!
+  ! Type storing parameters defining energy spectrum determining       !
+  !  (used at runtime)                                                 !
+  !                                                                    !
+  ! H. Naguszewski,  Warwick                                      2024 !
+  !--------------------------------------------------------------------!
+  type es_params
+    ! Number of mc sweeps (each sweep is n_atoms mc steps)
+    integer :: mc_sweeps
+    ! Number of unique energies to be recorded
+    integer :: unique_energy_count
+  end type es_params
 
   !--------------------------------------------------------------------!
   ! Interface for neighbour implementation                             !

@@ -14,6 +14,7 @@ program main
   use nested_sampling
   use tmmc
   use wang_landau
+  use energy_spectrum
   use io
   use kinds
   use c_functions
@@ -35,6 +36,9 @@ program main
 
   ! Wang Landau parameters type
   type(wl_params) :: wl_setup
+
+  ! Energy Spectrum parameters type
+  type(es_params) :: es_setup
 
   ! Start MPI
   call comms_initialise()
@@ -95,6 +99,12 @@ program main
     ! Wang Landau algorithm
     call read_wl_file("wl_input.txt", wl_setup, my_rank)
     call wl_main(setup, wl_setup, my_rank)
+
+  else if (setup%mode == 306) then
+
+    ! Energy spectrum algorithm
+    call read_es_file("es_input.txt", es_setup, my_rank)
+    call es_main(setup, es_setup, my_rank)
 
   else
 

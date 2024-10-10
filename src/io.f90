@@ -651,4 +651,80 @@ module io
 
   end subroutine read_wl_file
 
+  !--------------------------------------------------------------------!
+  ! Subroutine to read and parse nested wang landau control file       !
+  !                                                                    !
+  ! H. Naguszewski, Warwick                                       2024 !
+  !--------------------------------------------------------------------!
+  subroutine read_es_file(filename, parameters, my_rank)
+    integer :: my_rank
+    character(len=*), intent(in) :: filename
+    logical, dimension(2) :: check
+    type(es_params) :: parameters
+    character(len=100) :: buffer, label
+    integer :: line, pos, ios
+
+    check = .false.
+
+    ios=0; line=0
+
+    open(25, file=filename, iostat=ios)
+
+    if (ios .ne. 0) then
+      stop 'Could not parse energy spectrum input file. Aborting...'
+    end if
+
+    if (my_rank == 0) then
+      write(*,'(a)', advance='no') new_line('a')
+      print*, '######################################'
+      print*, '# Parsing energy spectrum input file #'
+      print*, '######################################'
+
+      print*, '# energy spectrum input file name: ', filename
+    end if
+
+    do while (ios==0)
+
+      read(25, "(A)", iostat=ios) buffer
+
+      if(ios==0) then
+        line=line+1
+
+        pos = scan(buffer, '=')
+        label=buffer(1:pos-1)
+        buffer = buffer(pos+1:)
+
+        select case (label)
+        case ('mc_sweeps')
+          read(buffer, *, iostat=ios) parameters%mc_sweeps
+          if (my_rank == 0) then
+            print*, '# Read mc_sweeps = ', parameters%mc_sweeps
+          end if
+          check(1) = .true.
+        case ('unique_energy_count')
+          read(buffer, *, iostat=ios) parameters%unique_energy_count
+          if (my_rank == 0) then
+            print*, '# Read unique_energy_count = ', parameters%unique_energy_count
+          end if
+          check(2) = .true.
+        case default
+          if (my_rank == 0) then
+            print*, '# Skipping invalid label'
+          end if
+        end select
+      end if
+    end do
+
+    if (my_rank == 0) then
+      print*, '# Finished parsing energy spectrum input file #'
+      print*, '###############################################', new_line('a')
+    end if
+    close(25)
+
+    if (.not. any(check)) then
+      stop 'Missing parameter in energy spectrum input file'
+    end if
+
+  end subroutine read_es_file
+
 end module io
